@@ -3,18 +3,18 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { supabase } from "@/lib/supabase";
 
-type DbRole = "student" | "teacher";
+export type RoleType = "STUDENT" | "TEACHER";
 
-// Declare module augmentation so TypeScript knows about custom user/session fields
+// Declare module augmentation with unified types
 declare module "next-auth" {
   interface User {
     id: string;
-    role?: string;
+    role?: RoleType;
   }
   interface Session {
     user: {
       id: string;
-      role?: string;
+      role?: RoleType;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -25,7 +25,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
-    role?: string;
+    role?: RoleType;
   }
 }
 
@@ -37,14 +37,16 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" },
         portal: { label: "Portal", type: "text" },
       },
       async authorize(credentials) {
         const email = credentials?.email?.trim().toLowerCase();
         const password = credentials?.password ?? "";
-        const portal = credentials?.portal?.toLowerCase();
+        // Accept either role or portal parameter passed from login forms
+        const rawRole = (credentials?.role || credentials?.portal || "").toLowerCase();
 
-        console.log("➡️ Login Attempt:", { email, portal });
+        console.log("➡️ Login Attempt:", { email, rawRole });
 
         if (!email || !password) {
           console.log("❌ Failed: Missing email or password");
@@ -56,7 +58,7 @@ export const authOptions: NextAuthOptions = {
           .from("users")
           .select("id,email,name,role,password_hash")
           .eq("email", email)
-          .single();
+          .maybeSingle();
 
         if (error || !data) {
           console.log("❌ Failed: User not found in Supabase for email:", email, error);
@@ -75,25 +77,25 @@ export const authOptions: NextAuthOptions = {
         const isPlaintextMatch = password === data.password_hash;
         const isValid = isBcryptMatch || isPlaintextMatch;
 
-        console.log("🔑 Password Valid?:", isValid, `(Bcrypt: ${isBcryptMatch}, Plaintext: ${isPlaintextMatch})`);
-
         if (!isValid) {
           console.log("❌ Failed: Password mismatch");
           throw new Error("Invalid email or password.");
         }
 
-        const dbRole = data.role?.toLowerCase() as DbRole | undefined;
+        const dbRoleLower = (data.role || "").toLowerCase();
 
         // Portal Mismatch Check
-        if (portal === "teacher" && dbRole !== "teacher") {
+        if (rawRole === "teacher" && dbRoleLower !== "teacher") {
           console.log("❌ Failed: Student tried to log into Teacher Portal");
           throw new Error("You are not authorized to access the Teacher Portal.");
         }
 
-        if (portal === "student" && dbRole !== "student") {
+        if (rawRole === "student" && dbRoleLower !== "student") {
           console.log("❌ Failed: Teacher tried to log into Student Portal");
           throw new Error("You are not authorized to access the Student Portal.");
         }
+
+        const normalizedRole: RoleType = dbRoleLower === "teacher" ? "TEACHER" : "STUDENT";
 
         console.log("🎉 Authentication Successful!");
 
@@ -101,7 +103,7 @@ export const authOptions: NextAuthOptions = {
           id: data.id,
           email: data.email,
           name: data.name,
-          role: dbRole === "teacher" ? "TEACHER" : "STUDENT",
+          role: normalizedRole,
         };
       },
     }),
@@ -121,7 +123,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as RoleType;
       }
       return session;
     },

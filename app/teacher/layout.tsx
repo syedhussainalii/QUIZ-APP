@@ -1,12 +1,9 @@
 import type { ReactNode } from "react";
-import { requireRole } from "@/lib/authorization";
 
-export default async function TeacherLayout({ children }: { children: ReactNode }) {
-  await requireRole("TEACHER");
-
+export default function TeacherLayout({ children }: { children: ReactNode }) {
   return (
-    <section className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased">
       {children}
-    </section>
+    </div>
   );
 }

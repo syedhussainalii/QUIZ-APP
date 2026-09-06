@@ -1,32 +1,34 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { ReactNode } from "react";
 
-type RoleGateProps = {
-  allowedRoles: ("STUDENT" | "TEACHER")[];
-  children: React.ReactNode;
-};
+type UserRole = "STUDENT" | "TEACHER";
 
-export default function RoleGate({ allowedRoles, children }: RoleGateProps) {
+interface RoleGateProps {
+  children: ReactNode;
+  allowedRole: UserRole;
+  fallback?: ReactNode;
+}
+
+export default function RoleGate({
+  children,
+  allowedRole,
+  fallback = null,
+}: RoleGateProps) {
   const { data: session, status } = useSession();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (status === "loading") return;
-    const role = session?.user.role;
-    if (!role || !allowedRoles.includes(role)) {
-      router.replace(session ? "/student/dashboard" : "/");
-    }
-  }, [status, session, allowedRoles, router]);
-
-  if (status === "loading" || !session) {
-    return null;
+  if (status === "loading") {
+    return (
+      <div className="p-4 text-xs text-slate-400">Loading permissions...</div>
+    );
   }
 
-  if (!allowedRoles.includes(session.user.role)) {
-    return null;
+  // Explicit type cast to avoid string / undefined TS2345 mismatch
+  const userRole = (session?.user as { role?: UserRole })?.role;
+
+  if (!userRole || userRole !== allowedRole) {
+    return <>{fallback}</>;
   }
 
   return <>{children}</>;
