@@ -1,0 +1,159 @@
+{
+  "title": "AI Foundations & Web Security Systems",
+  "category": "Computer Science",
+  "difficulty": "Hard",
+  "duration_minutes": 30,
+  "due_date": "2026-12-15T23:59:00Z",
+  "questions": [
+    {
+      "question_text": "Which machine learning algorithm family constructs a set of decision trees during training and outputs the mode of the classes for classification?",
+      "options": ["Support Vector Machine (SVM)", "Random Forest", "K-Means Clustering", "Linear Regression"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In web application security, which attack technique tricks a victim's authenticated browser into sending forged requests to a vulnerable application?",
+      "options": ["Cross-Site Scripting (XSS)", "SQL Injection (SQLi)", "Cross-Site Request Forgery (CSRF)", "Man-in-the-Middle (MitM)"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "Which activation function in deep neural networks outputs values strictly bounded between 0 and 1, commonly used for binary classification outputs?",
+      "options": ["ReLU", "Sigmoid", "Leaky ReLU", "Softmax"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "Which HTTP header is specifically designed to restrict browsers from rendering a site inside an <iframe>, mitigating Clickjacking attacks?",
+      "options": ["X-Frame-Options", "Access-Control-Allow-Origin", "Content-Security-Policy", "Strict-Transport-Security"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In natural language processing, which key architectural mechanism allows Transformer models to process all tokens in a sequence concurrently?",
+      "options": ["Recurrent Hidden Loop", "Self-Attention Mechanism", "Convolutional Pooling Layer", "Gradient Boosting"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "Which type of machine learning uses labeled input-output pairs to train a model?",
+      "options": ["Unsupervised Learning", "Supervised Learning", "Reinforcement Learning", "Semi-Structured Learning"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the primary purpose of the backpropagation algorithm in neural network training?",
+      "options": [
+        "To compute gradients of the loss function with respect to weights, enabling weight updates",
+        "To initialize weights randomly before training begins",
+        "To split the dataset into training and testing sets",
+        "To visualize the network's architecture"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which attack involves injecting malicious scripts into web pages viewed by other users?",
+      "options": ["SQL Injection", "Cross-Site Scripting (XSS)", "Cross-Site Request Forgery (CSRF)", "Directory Traversal"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What does 'overfitting' mean in the context of a machine learning model?",
+      "options": [
+        "The model learns the training data too well, including noise, and performs poorly on unseen data",
+        "The model fails to converge during training",
+        "The model uses too few parameters to capture patterns",
+        "The model trains faster than expected"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which HTTP header helps prevent attacks by restricting which sources of content (scripts, styles, images) a browser is allowed to load?",
+      "options": ["Content-Security-Policy (CSP)", "X-Frame-Options", "Set-Cookie", "ETag"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In SQL injection attacks, what is the attacker's primary technique?",
+      "options": [
+        "Inserting malicious SQL code through user input fields to manipulate or extract database contents",
+        "Overloading a server with excessive traffic",
+        "Intercepting network packets between client and server",
+        "Exploiting weak password hashing algorithms"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which regularization technique randomly disables a fraction of neurons during training to reduce overfitting?",
+      "options": ["Batch Normalization", "Dropout", "Gradient Clipping", "Early Stopping"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the main purpose of using salt when hashing passwords for storage?",
+      "options": [
+        "To add random data to each password before hashing, preventing precomputed rainbow-table attacks",
+        "To compress the password hash for storage efficiency",
+        "To make passwords case-insensitive",
+        "To speed up the hashing computation"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which unsupervised learning technique groups data points into clusters based on similarity, without predefined labels?",
+      "options": ["Linear Regression", "K-Means Clustering", "Logistic Regression", "Decision Trees"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What does TLS (Transport Layer Security) primarily provide for web communications?",
+      "options": [
+        "Encryption, authentication, and integrity for data transmitted between client and server",
+        "Faster page load times through caching",
+        "Automatic load balancing across servers",
+        "Client-side form validation"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In gradient descent optimization, what does the 'learning rate' control?",
+      "options": [
+        "The step size taken toward minimizing the loss function during each update",
+        "The number of layers in a neural network",
+        "The total number of training examples used",
+        "The type of activation function applied"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which security principle states that a user or process should be granted only the minimum access necessary to perform its function?",
+      "options": ["Defense in Depth", "Principle of Least Privilege", "Fail-Safe Defaults", "Separation of Duties"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the primary function of the Softmax activation function in a neural network's output layer?",
+      "options": [
+        "To convert raw output scores into a probability distribution across multiple classes",
+        "To introduce non-linearity in hidden layers only",
+        "To normalize input data before training",
+        "To prevent vanishing gradients in deep networks"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What is a 'zero-day' vulnerability in cybersecurity?",
+      "options": [
+        "A previously unknown software flaw that is exploited before a patch or fix is available",
+        "A vulnerability that only affects systems on their first day of deployment",
+        "A bug that automatically resolves itself after 24 hours",
+        "A flaw that only occurs at midnight (00:00) system time"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In reinforcement learning, what is the role of the 'reward signal'?",
+      "options": [
+        "It provides feedback to the agent, guiding it toward actions that maximize cumulative reward over time",
+        "It labels each training example with its correct class",
+        "It determines the number of hidden layers in the model",
+        "It splits the dataset into batches for training"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which authentication mechanism uses a token containing an expiration time and digital signature, allowing stateless verification without a server-side session store?",
+      "options": ["Session Cookies", "JSON Web Token (JWT)", "Basic HTTP Auth", "API Key in URL"],
+      "correct_option_index": 1
+    }
+  ]
+}

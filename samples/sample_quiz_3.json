@@ -1,0 +1,164 @@
+{
+  "title": "Software Engineering & Database Systems Mastery",
+  "category": "Computer Science",
+  "difficulty": "Hard",
+  "duration_minutes": 30,
+  "due_date": "2026-11-30T23:59:00Z",
+  "questions": [
+    {
+      "question_text": "In relational database design, which Normal Form (NF) deals with removing transitive dependencies?",
+      "options": ["First Normal Form (1NF)", "Second Normal Form (2NF)", "Third Normal Form (3NF)", "Boyce-Codd Normal Form (BCNF)"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "Which ACID property guarantees that database transactions are committed permanently even in the event of a system crash?",
+      "options": ["Atomicity", "Consistency", "Isolation", "Durability"],
+      "correct_option_index": 3
+    },
+    {
+      "question_text": "In microservice architectures, which pattern helps prevent cascading failures when an external downstream service fails?",
+      "options": ["Circuit Breaker Pattern", "Singleton Pattern", "Factory Pattern", "Observer Pattern"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What type of index in SQL Server/PostgreSQL physically dictates the storage order of data rows on disk?",
+      "options": ["Non-Clustered Index", "Clustered Index", "Secondary Index", "Filtered Index"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In git version control, which command creates a copy of a remote repository on your local system?",
+      "options": ["git pull", "git fetch", "git clone", "git checkout"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "Which SOLID principle states that a class should have only one reason to change?",
+      "options": ["Open/Closed Principle", "Single Responsibility Principle", "Liskov Substitution Principle", "Dependency Inversion Principle"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What isolation level prevents dirty reads but still allows non-repeatable reads and phantom reads?",
+      "options": ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In a distributed database, what does the CAP theorem state a system can guarantee at most two of simultaneously?",
+      "options": [
+        "Consistency, Availability, Partition Tolerance",
+        "Concurrency, Atomicity, Persistence",
+        "Caching, Availability, Performance",
+        "Consistency, Atomicity, Parallelism"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which git command is used to combine multiple commits into a single commit, rewriting history?",
+      "options": ["git merge", "git rebase -i (interactive rebase)", "git cherry-pick", "git revert"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the primary purpose of database sharding?",
+      "options": [
+        "To horizontally partition data across multiple database instances to improve scalability",
+        "To encrypt sensitive columns in a table",
+        "To create a backup copy of the database",
+        "To enforce foreign key constraints"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In the Observer design pattern, what is the relationship between the subject and its observers?",
+      "options": [
+        "The subject maintains a list of observers and notifies them automatically of any state changes",
+        "Observers directly modify the subject's internal state",
+        "Only one observer can be attached to a subject at a time",
+        "The subject polls each observer periodically for updates"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What problem does database denormalization primarily aim to solve?",
+      "options": [
+        "Improving read performance by reducing the number of joins, at the cost of some redundancy",
+        "Eliminating all duplicate data permanently",
+        "Enforcing strict referential integrity",
+        "Reducing overall storage space"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which testing approach involves writing test cases before writing the actual implementation code?",
+      "options": ["Behavior-Driven Development (BDD)", "Test-Driven Development (TDD)", "Static Analysis", "Regression Testing"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In SQL, what is the key difference between a LEFT JOIN and an INNER JOIN?",
+      "options": [
+        "LEFT JOIN returns all rows from the left table plus matching rows from the right table (NULLs if no match); INNER JOIN returns only matching rows from both",
+        "LEFT JOIN only returns matching rows; INNER JOIN returns all rows",
+        "There is no difference between them",
+        "LEFT JOIN cannot be used with WHERE clauses"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What is a 'race condition' in concurrent software systems?",
+      "options": [
+        "A situation where the outcome depends on the unpredictable timing of concurrent operations accessing shared resources",
+        "A CPU scheduling algorithm for high-priority tasks",
+        "An error that occurs only during compilation",
+        "A network protocol used for load balancing"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In event-driven architecture, what is the role of a message queue (e.g., RabbitMQ, Kafka)?",
+      "options": [
+        "To decouple producers and consumers by buffering and delivering messages asynchronously",
+        "To store the application's entire relational schema",
+        "To compile source code into executables",
+        "To render UI components on the client"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which git command safely creates a new commit that undoes the changes of a previous commit, without rewriting history?",
+      "options": ["git reset --hard", "git revert", "git rebase", "git stash"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What does the term 'idempotency' mean in the context of API design?",
+      "options": [
+        "Making the same request multiple times produces the same result as making it once",
+        "Every request must return a different response",
+        "Requests are processed in strict sequential order only",
+        "The API caches all GET requests indefinitely"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "In database transaction management, what is a 'deadlock' between two transactions?",
+      "options": [
+        "A situation where two transactions each hold a lock the other needs, causing both to wait indefinitely",
+        "A transaction that commits before another transaction starts",
+        "An index corruption caused by concurrent writes",
+        "A transaction that automatically retries on failure"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which architectural pattern separates an application into Model, View, and Controller components to promote separation of concerns?",
+      "options": ["MVC (Model-View-Controller)", "MVVM (Model-View-ViewModel)", "Layered Architecture", "Event Sourcing"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What is the main benefit of using a foreign key constraint in a relational database?",
+      "options": [
+        "It enforces referential integrity by ensuring a value in one table matches a valid value in another",
+        "It automatically indexes every column in a table",
+        "It encrypts data stored in that column",
+        "It removes the need for primary keys"
+      ],
+      "correct_option_index": 0
+    }
+  ]
+}

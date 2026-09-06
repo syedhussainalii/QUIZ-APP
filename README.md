@@ -1,4 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a Next.js university quiz platform using Supabase PostgreSQL and NextAuth credentials sessions.
+
+## Authentication
+
+Google OAuth has been removed. The app now uses separate Student and Teacher login portals backed by `CredentialsProvider`.
+
+- Student login: `/login/student`
+- Teacher login: `/login/teacher`
+- Student dashboard: `/student/dashboard`
+- Teacher dashboard: `/teacher/dashboard`
+
+The selected portal only chooses the login form. The authenticated role is always read from `users.role` after bcrypt password verification against `users.password_hash`.
+
+Development accounts seeded by `scripts/schema.sql`:
+
+- Student: `student@gmail.com` / `123456`
+- Teacher: `teacher@kiet.edu.pk` / `123456`
+
+The password is stored only as a bcrypt hash in Supabase. To change a demo password, run:
+
+```bash
+node -e "const bcrypt=require('bcryptjs'); bcrypt.hash('new-password', 12).then(console.log)"
+```
+
+Then update `users.password_hash` for the desired demo user.
+
+No longer needed in `.env.local`:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
 
 ## Getting Started
 

@@ -1,0 +1,159 @@
+{
+  "title": "Operating Systems & Web Architecture Fundamentals",
+  "category": "Computer Science",
+  "difficulty": "Medium",
+  "duration_minutes": 30,
+  "due_date": "2026-10-15T23:59:00Z",
+  "questions": [
+    {
+      "question_text": "Which memory management scheme allows the physical address space of a process to be non-contiguous?",
+      "options": ["Paging", "Contiguous Allocation", "Single-Partition Allocation", "Fixed Partitioning"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What occurs when a CPU attempts to access a page that is mapped into the virtual address space but not loaded into physical RAM?",
+      "options": ["System Crash", "Page Fault", "Segmentation Fault", "Deadlock"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In HTTP communications, which response status code range represents Client Errors?",
+      "options": ["2xx", "3xx", "4xx", "5xx"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "Which mechanism is used by modern web applications to safely transmit claims between two parties as a JSON object?",
+      "options": ["XML HTTP Request", "JSON Web Token (JWT)", "Basic Auth Header", "CORS Preflight"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "Which CPU scheduling algorithm gives the lowest average waiting time for a given set of processes?",
+      "options": ["First-Come, First-Served (FCFS)", "Round Robin (RR)", "Shortest-Job-First (SJF)", "Priority Scheduling"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "What is a deadlock in operating systems?",
+      "options": [
+        "A state where two or more processes are each waiting for a resource held by another, forming a cycle with no progress",
+        "A process that has finished executing but not been removed from memory",
+        "A scheduling algorithm that never terminates",
+        "An error caused by insufficient CPU cache"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which of the four Coffman conditions is NOT required for a deadlock to occur?",
+      "options": ["Mutual Exclusion", "Hold and Wait", "Preemption", "Circular Wait"],
+      "correct_option_index": 2
+    },
+    {
+      "question_text": "What is the main difference between a process and a thread?",
+      "options": [
+        "Threads within the same process share the same memory space, while processes have separate memory spaces",
+        "Processes are lighter-weight than threads",
+        "Threads cannot run concurrently, but processes can",
+        "There is no difference; the terms are interchangeable"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which synchronization primitive uses an integer counter to control access to a shared resource by multiple processes?",
+      "options": ["Mutex", "Semaphore", "Monitor", "Spinlock"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is 'thrashing' in the context of virtual memory?",
+      "options": [
+        "Excessive paging activity that causes the system to spend most of its time swapping pages instead of executing processes",
+        "A CPU running at maximum clock speed continuously",
+        "A hard disk failure due to overheating",
+        "Two threads writing to the same variable simultaneously"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which HTTP method is idempotent and safe, typically used to retrieve a resource without modifying server state?",
+      "options": ["POST", "GET", "PUT", "DELETE"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What does REST stand for in the context of web API architecture?",
+      "options": [
+        "Representational State Transfer",
+        "Remote Execution Service Transfer",
+        "Reliable State Transmission",
+        "Resource Endpoint Service Transport"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which HTTP status code indicates that a resource was successfully created?",
+      "options": ["200 OK", "201 Created", "204 No Content", "301 Moved Permanently"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the purpose of CORS (Cross-Origin Resource Sharing) in web browsers?",
+      "options": [
+        "To control which external origins are permitted to make requests to a server's resources",
+        "To encrypt data sent over HTTPS",
+        "To compress HTTP responses for faster delivery",
+        "To cache static assets on the client"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which protocol translates human-readable domain names into IP addresses?",
+      "options": ["DHCP", "DNS", "FTP", "SMTP"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "In a client-server web architecture, what is the primary role of a load balancer?",
+      "options": [
+        "To distribute incoming network traffic across multiple servers to prevent overload",
+        "To store session data permanently",
+        "To compile server-side code",
+        "To encrypt database queries"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What distinguishes HTTPS from HTTP?",
+      "options": [
+        "HTTPS encrypts data in transit using TLS/SSL, while HTTP does not",
+        "HTTPS is faster because it skips the TCP handshake",
+        "HTTPS only works with static websites",
+        "HTTPS does not support POST requests"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which OS scheduling technique allocates a fixed time slice to each process in a cyclic order?",
+      "options": ["Shortest-Job-First (SJF)", "Round Robin (RR)", "Priority Scheduling", "First-Come, First-Served (FCFS)"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What is the main purpose of a cookie in web architecture?",
+      "options": [
+        "To store small pieces of state (like session data) on the client, sent back to the server with each request",
+        "To permanently store large files on the client",
+        "To encrypt HTTP headers",
+        "To balance load across servers"
+      ],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "Which OS concept refers to giving a process the illusion of a very large, contiguous memory space, backed partly by disk?",
+      "options": ["Virtual Memory", "Direct Memory Access (DMA)", "Cache Memory", "Firmware"],
+      "correct_option_index": 0
+    },
+    {
+      "question_text": "What is the purpose of an API Gateway in a microservices web architecture?",
+      "options": [
+        "To act as a single entry point that routes client requests to the appropriate backend microservices",
+        "To store the entire application's database",
+        "To compile microservices into a single monolith",
+        "To render the frontend UI"
+      ],
+      "correct_option_index": 0
+    }
+  ]
+}
