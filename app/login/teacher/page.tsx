@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function TeacherLoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
   const [email, setEmail] = useState("teacher@kiet.edu.pk");
   const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export default function TeacherLoginPage() {
         email,
         password,
         role: "TEACHER",
-        portal: "teacher", // Passed both role & portal for NextAuth authorize compatibility
+        portal: "teacher",
       });
 
       if (res?.error) {
@@ -65,12 +67,24 @@ export default function TeacherLoginPage() {
                 Teacher Portal
               </span>
               <h2 className="text-2xl font-extrabold text-white mt-4 leading-tight">
-                Secure University Assessment Portal
+                Secure Assessment Portal
               </h2>
               <p className="text-xs text-slate-400 mt-3 leading-relaxed">
-                KIET email is required for this portal, and the database role must be TEACHER.
+                KIET faculty credentials required for access.
               </p>
             </div>
+
+            {session && (
+              <div className="mt-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+                Logged in as <strong className="text-white">{session.user?.email}</strong>.
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login/teacher" })}
+                  className="block mt-2 font-bold underline text-amber-400 hover:text-amber-300"
+                >
+                  Click here to Switch Account / Sign Out
+                </button>
+              </div>
+            )}
 
             <div className="mt-8 pt-6 border-t border-slate-800/80">
               <Link
@@ -86,7 +100,7 @@ export default function TeacherLoginPage() {
           <div className="md:col-span-7 p-8 flex flex-col justify-center">
             <div className="mb-6">
               <h3 className="text-xl font-bold text-white tracking-tight">Teacher Login</h3>
-              <p className="text-xs text-slate-400 mt-1">Use your issued account credentials to continue.</p>
+              <p className="text-xs text-slate-400 mt-1">Enter your account credentials to continue.</p>
             </div>
 
             {errorMsg && (
