@@ -62,7 +62,7 @@ export default function Home() {
             </div>
 
             <Link
-              href="/student/dashboard"
+              href="/login/student"
               className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 group-hover:gap-3"
             >
               <span>Login as Student</span>
@@ -85,7 +85,7 @@ export default function Home() {
             </div>
 
             <Link
-              href="/teacher/dashboard"
+              href="/login/teacher"
               className="w-full py-3 px-4 bg-slate-800 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2 group-hover:gap-3"
             >
               <span>Login as Teacher</span>

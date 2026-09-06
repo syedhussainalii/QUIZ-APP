@@ -5,30 +5,6 @@ import { supabase } from "@/lib/supabase";
 
 export type RoleType = "STUDENT" | "TEACHER";
 
-// Declare module augmentation with unified types
-declare module "next-auth" {
-  interface User {
-    id: string;
-    role?: RoleType;
-  }
-  interface Session {
-    user: {
-      id: string;
-      role?: RoleType;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-    };
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    role?: RoleType;
-  }
-}
-
 export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
   providers: [
