@@ -7,8 +7,8 @@ import Link from "next/link";
 
 export default function TeacherLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("teacher@kiet.edu.pk");
+  const [password, setPassword] = useState("123456");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -23,6 +23,7 @@ export default function TeacherLoginPage() {
         email,
         password,
         role: "TEACHER",
+        portal: "teacher", // Passed both role & portal for NextAuth authorize compatibility
       });
 
       if (res?.error) {
@@ -33,7 +34,7 @@ export default function TeacherLoginPage() {
 
       router.push("/teacher/dashboard");
       router.refresh();
-    } catch (err) {
+    } catch {
       setErrorMsg("An unexpected error occurred during sign in.");
       setLoading(false);
     }
