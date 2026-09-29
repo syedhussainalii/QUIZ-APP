@@ -1,8 +1,12 @@
 import { quizzes } from "@/data/mockQuizzes";
+import Link from "next/link";
 
 export default function TeacherQuizzesPage() {
   return (
     <section className="mx-auto max-w-7xl space-y-4 p-6">
+      <Link href="/teacher/dashboard" className="inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-950">
+        ← Back to Dashboard
+      </Link>
       <h1 className="text-2xl font-semibold text-slate-950">Quizzes</h1>
       <div className="grid gap-4">
         {quizzes.map((quiz) => (

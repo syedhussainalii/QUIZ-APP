@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { supabase } from "@/lib/supabase";
 
@@ -494,6 +495,9 @@ export default function CreateQuizPage() {
 
   return (
     <section className="mx-auto max-w-5xl space-y-6 p-6">
+      <Link href="/teacher/dashboard" className="inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-950">
+        ← Back to Dashboard
+      </Link>
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-semibold text-slate-950">

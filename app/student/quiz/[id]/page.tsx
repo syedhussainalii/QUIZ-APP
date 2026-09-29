@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
@@ -33,13 +32,13 @@ interface QuizResult {
   percentage: number;
   passed: boolean;
   tabViolations: number;
+  terminated: boolean;
 }
 
 export default function StudentQuizPage() {
   const router = useRouter();
   const params = useParams();
   const quizId = params?.id as string;
-  const { data: session } = useSession();
 
   // Quiz & State Management
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -52,9 +51,8 @@ export default function StudentQuizPage() {
   // Result Modal State
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
-  // Timer & Security Tracking
+  // Timer
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [tabViolations, setTabViolations] = useState(0);
 
   // Onboarding & Camera States
   const [showOnboardingModal, setShowOnboardingModal] = useState(true);
@@ -64,6 +62,9 @@ export default function StudentQuizPage() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const activeAttemptRef = useRef(false);
+  const endingAttemptRef = useRef(false);
+  const attemptIdRef = useRef<string | null>(null);
 
   // 1. Fetch Quiz Details & Questions
   useEffect(() => {
@@ -111,9 +112,9 @@ export default function StudentQuizPage() {
         });
 
         setQuestions(formattedQuestions);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Fetch Quiz Error:", err);
-        setErrorMsg(err.message || "Failed to load assessment details.");
+        setErrorMsg(errorMessage(err, "Failed to load assessment details."));
       } finally {
         setLoading(false);
       }
@@ -150,28 +151,107 @@ export default function StudentQuizPage() {
     };
   }, []);
 
-  // 3. Tab Violations Detection
+  const handleSelectOption = (questionId: string, optionIdx: number) => {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [questionId]: optionIdx,
+    }));
+  };
+
+  // The server grades and finalizes the already-created attempt. The client does
+  // not decide whether an attempt may be created or submitted.
+  const handleSubmitQuiz = useCallback(async (terminated = false) => {
+    if (endingAttemptRef.current) return;
+    endingAttemptRef.current = true;
+    setSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+
+      const response = await fetch(`/api/student/quizzes/${quizId}/attempt/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: selectedAnswers, terminated, attemptId: attemptIdRef.current }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unknown error");
+      }
+
+      // Exit fullscreen mode on completion
+      if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      // Display the result modal instantly
+      setQuizResult({
+        score: result.score,
+        totalQuestions: result.totalQuestions,
+        percentage: result.percentage,
+        passed: result.passed,
+        tabViolations: terminated ? 1 : 0,
+        terminated,
+      });
+      activeAttemptRef.current = false;
+    } catch (err: unknown) {
+      console.error("Submission failed:", err);
+      setErrorMsg(`Assessment could not be submitted: ${errorMessage(err, "Unknown error")}`);
+      endingAttemptRef.current = false;
+    } finally {
+      setSubmitting(false);
+    }
+  }, [quizId, selectedAnswers]);
+
+  // The attempt is reserved on the server before the exam becomes active. A
+  // duplicate insert is rejected by the database unique index.
+  const handleStartAssessment = async () => {
+    setSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      const response = await fetch(`/api/student/quizzes/${quizId}/attempt`, { method: "POST" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Could not start this test.");
+
+      activeAttemptRef.current = true;
+      attemptIdRef.current = result.attemptId ?? null;
+      setShowOnboardingModal(false);
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } catch (err: unknown) {
+      setErrorMsg(errorMessage(err, "Could not start this test."));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // A single visibility loss or window blur ends an active attempt. The refs
+  // make the two browser events idempotent and avoid false positives before the
+  // student explicitly starts the assessment.
   useEffect(() => {
     if (showOnboardingModal || quizResult) return;
 
+    const terminateForViolation = () => {
+      if (!activeAttemptRef.current || endingAttemptRef.current) return;
+      handleSubmitQuiz(true);
+    };
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setTabViolations((prev) => {
-          const updated = prev + 1;
-          if (updated >= 3) {
-            alert("Maximum security violations reached (3/3). Submitting assessment automatically.");
-            handleSubmitQuiz();
-          }
-          return updated;
-        });
-      }
+      if (document.hidden) terminateForViolation();
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [showOnboardingModal, quizResult]);
+    window.addEventListener("blur", terminateForViolation);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", terminateForViolation);
+    };
+  }, [showOnboardingModal, quizResult, handleSubmitQuiz]);
 
-  // 4. Countdown Timer Handler
   useEffect(() => {
     if (showOnboardingModal || quizResult || timeLeft === null || timeLeft <= 0) return;
 
@@ -187,84 +267,7 @@ export default function StudentQuizPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [showOnboardingModal, quizResult, timeLeft]);
-
-  const handleStartAssessment = () => {
-    setShowOnboardingModal(false);
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    }
-  };
-
-  const handleSelectOption = (questionId: string, optionIdx: number) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [questionId]: optionIdx,
-    }));
-  };
-
-  // 5. Submit Handler (Calculates Score and Opens Results Modal)
-  const handleSubmitQuiz = async () => {
-    if (submitting) return;
-    setSubmitting(true);
-    setErrorMsg("");
-
-    try {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-
-      let calculatedScore = 0;
-      questions.forEach((q) => {
-        if (selectedAnswers[q.id] === q.correct_option_index) {
-          calculatedScore += 1;
-        }
-      });
-
-      const totalQ = questions.length || 1;
-      const computedPercentage = Math.round((calculatedScore / totalQ) * 100);
-      const isPassed = computedPercentage >= 50;
-
-      const submissionPayload = {
-        id: crypto.randomUUID(),
-        quiz_id: quizId,
-        student_name: session?.user?.name || "Demo Student",
-        score: calculatedScore,
-        total_questions: questions.length,
-        percentage: computedPercentage,
-        passed: isPassed,
-        tab_violations: tabViolations,
-        ...(session?.user?.id ? { user_id: session.user.id } : {}),
-      };
-
-      const { error: insertError } = await supabase
-        .from("submissions")
-        .insert([submissionPayload]);
-
-      if (insertError) {
-        throw new Error(insertError.message);
-      }
-
-      // Exit fullscreen mode on completion
-      if (document.exitFullscreen && document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      }
-
-      // Display the result modal instantly
-      setQuizResult({
-        score: calculatedScore,
-        totalQuestions: questions.length,
-        percentage: computedPercentage,
-        passed: isPassed,
-        tabViolations: tabViolations,
-      });
-    } catch (err: any) {
-      console.error("Submission failed:", err);
-      setErrorMsg(`Assessment could not be submitted: ${err.message || "Unknown error"}`);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  }, [showOnboardingModal, quizResult, timeLeft, handleSubmitQuiz]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -294,9 +297,17 @@ export default function StudentQuizPage() {
 
             <div>
               <h2 className="text-2xl font-extrabold text-white">
-                {quizResult.passed ? "Assessment Passed!" : "Assessment Completed"}
+                {quizResult.terminated
+                  ? "Assessment Ended"
+                  : quizResult.passed
+                    ? "Assessment Passed!"
+                    : "Assessment Completed"}
               </h2>
-              <p className="text-xs text-slate-400 mt-1">Here is your final performance breakdown.</p>
+              <p className="text-xs text-slate-400 mt-1">
+                {quizResult.terminated
+                  ? "Your test has been ended because you switched tabs or left the test window."
+                  : "Here is your final performance breakdown."}
+              </p>
             </div>
 
             {/* Score Cards */}
@@ -320,12 +331,14 @@ export default function StudentQuizPage() {
             <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-400 space-y-1">
               <div className="flex justify-between">
                 <span>Proctoring Status:</span>
-                <span className="text-emerald-400 font-semibold">Verified</span>
+                <span className={quizResult.terminated ? "text-red-400 font-semibold" : "text-emerald-400 font-semibold"}>
+                  {quizResult.terminated ? "Terminated" : "Verified"}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span>Tab Violations:</span>
-                <span className={quizResult.tabViolations > 0 ? "text-amber-400 font-semibold" : "text-slate-200"}>
-                  {quizResult.tabViolations} / 3
+                <span>Tab-switch status:</span>
+                <span className={quizResult.terminated ? "text-red-400 font-semibold" : "text-slate-200"}>
+                  {quizResult.tabViolations ? "Detected — attempt ended" : "None"}
                 </span>
               </div>
             </div>
@@ -349,9 +362,15 @@ export default function StudentQuizPage() {
               Please enable your camera and accept terms to launch the exam.
             </p>
 
+            {errorMsg && (
+              <p role="alert" className="mb-4 rounded-lg border border-red-800 bg-red-950/60 p-3 text-xs text-red-200">
+                {errorMsg}
+              </p>
+            )}
+
             <ul className="text-xs text-slate-300 space-y-2 bg-slate-950/60 p-3 rounded-xl border border-slate-800 mb-4">
               <li>• Fullscreen mode will be requested upon launch.</li>
-              <li>• Tab switching is monitored (3 violations triggers auto-submission).</li>
+              <li>• Switching tabs or leaving the test window ends the attempt immediately.</li>
               <li>• Live camera monitor must remain active throughout the session.</li>
             </ul>
 
@@ -392,7 +411,7 @@ export default function StudentQuizPage() {
             </div>
 
             <button
-              disabled={!termsAccepted || !isCameraActive}
+              disabled={!termsAccepted || !isCameraActive || submitting}
               onClick={handleStartAssessment}
               className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-semibold text-sm rounded-xl transition"
             >
@@ -444,12 +463,6 @@ export default function StudentQuizPage() {
           </div>
         )}
 
-        {tabViolations > 0 && (
-          <div className="mb-6 p-4 bg-amber-950/60 border border-amber-800 text-amber-300 rounded-xl text-sm">
-            Warning: Tab switching detected! Violations count: {tabViolations}/3
-          </div>
-        )}
-
         <main className="space-y-6 mb-8">
           {questions.length === 0 ? (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400">
@@ -488,7 +501,7 @@ export default function StudentQuizPage() {
 
         <footer className="pb-12">
           <button
-            onClick={handleSubmitQuiz}
+            onClick={() => handleSubmitQuiz()}
             disabled={submitting || showOnboardingModal || questions.length === 0}
             className="w-full py-3.5 bg-green-600 hover:bg-green-500 disabled:bg-slate-800 text-white font-bold rounded-xl shadow-xl transition"
           >
@@ -498,4 +511,8 @@ export default function StudentQuizPage() {
       </div>
     </div>
   );
+}
+
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
 }

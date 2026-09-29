@@ -17,6 +17,19 @@ interface Quiz {
   due_date: string;
 }
 
+interface EditableQuestion {
+  id?: string;
+  question_text: string;
+  options: string[];
+  correct_option_index: number;
+}
+
+const blankQuestion = (): EditableQuestion => ({
+  question_text: "",
+  options: ["", "", "", ""],
+  correct_option_index: 0,
+});
+
 export default function TeacherDashboard() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -28,6 +41,11 @@ export default function TeacherDashboard() {
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editDuration, setEditDuration] = useState(10);
+  const [editQuestions, setEditQuestions] = useState<EditableQuestion[]>([]);
+  const [deletedQuestionIds, setDeletedQuestionIds] = useState<string[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState("");
 
   useEffect(() => {
     fetchQuizzes();
@@ -54,22 +72,123 @@ export default function TeacherDashboard() {
     setQuizzes((prev) => prev.filter((q) => q.id !== id));
   };
 
-  const handleOpenEdit = (quiz: Quiz) => {
+  const handleOpenEdit = async (quiz: Quiz) => {
     setEditingQuiz(quiz);
     setEditTitle(quiz.title);
     setEditCategory(quiz.category);
     setEditDuration(quiz.duration_minutes);
+    setEditQuestions([]);
+    setDeletedQuestionIds([]);
+    setEditError("");
+    setLoadingQuestions(true);
+
+    const { data, error } = await supabase
+      .from("questions")
+      .select("id,question_text,options,correct_option_index")
+      .eq("quiz_id", quiz.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      setEditError(`Could not load questions: ${error.message}`);
+    } else {
+      setEditQuestions((data ?? []).map((question) => ({
+        id: question.id,
+        question_text: question.question_text,
+        options: Array.isArray(question.options) ? question.options : [],
+        correct_option_index: question.correct_option_index,
+      })));
+    }
+
+    setLoadingQuestions(false);
   };
 
   const handleSaveEdit = async () => {
     if (!editingQuiz) return;
-    await supabase
-      .from("quizzes")
-      .update({ title: editTitle, category: editCategory, duration_minutes: Number(editDuration) })
-      .eq("id", editingQuiz.id);
+    setEditError("");
 
-    setEditingQuiz(null);
-    fetchQuizzes();
+    const duration = Number(editDuration);
+    if (!editTitle.trim() || !editCategory.trim() || !Number.isInteger(duration) || duration < 1) {
+      setEditError("Enter a title, category, and positive whole-number duration.");
+      return;
+    }
+
+    if (!editQuestions.length || editQuestions.some((question) =>
+      !question.question_text.trim() ||
+      question.options.length !== 4 ||
+      question.options.some((option) => !option.trim()) ||
+      !Number.isInteger(question.correct_option_index) ||
+      question.correct_option_index < 0 ||
+      question.correct_option_index > 3,
+    )) {
+      setEditError("Each question needs text, four options, and one correct answer.");
+      return;
+    }
+
+    setSavingEdit(true);
+    try {
+      const { error: quizError } = await supabase
+        .from("quizzes")
+        .update({ title: editTitle.trim(), category: editCategory.trim(), duration_minutes: duration })
+        .eq("id", editingQuiz.id);
+      if (quizError) throw quizError;
+
+      if (deletedQuestionIds.length) {
+        const { error } = await supabase.from("questions").delete().in("id", deletedQuestionIds);
+        if (error) throw error;
+      }
+
+      const existingQuestions = editQuestions.filter((question) => question.id);
+      for (const question of existingQuestions) {
+        const { error } = await supabase
+          .from("questions")
+          .update({
+            question_text: question.question_text.trim(),
+            options: question.options.map((option) => option.trim()),
+            correct_option_index: question.correct_option_index,
+          })
+          .eq("id", question.id!);
+        if (error) throw error;
+      }
+
+      const newQuestions = editQuestions.filter((question) => !question.id);
+      if (newQuestions.length) {
+        const { error } = await supabase.from("questions").insert(newQuestions.map((question) => ({
+          quiz_id: editingQuiz.id,
+          question_text: question.question_text.trim(),
+          options: question.options.map((option) => option.trim()),
+          correct_option_index: question.correct_option_index,
+        })));
+        if (error) throw error;
+      }
+
+      setEditingQuiz(null);
+      fetchQuizzes();
+    } catch (error) {
+      setEditError(error instanceof Error ? error.message : "Could not save quiz changes.");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const editQuestion = (index: number, changes: Partial<EditableQuestion>) => {
+    setEditQuestions((questions) => questions.map((question, questionIndex) =>
+      questionIndex === index ? { ...question, ...changes } : question,
+    ));
+  };
+
+  const editOption = (questionIndex: number, optionIndex: number, value: string) => {
+    const question = editQuestions[questionIndex];
+    if (!question) return;
+    editQuestion(questionIndex, {
+      options: question.options.map((option, index) => index === optionIndex ? value : option),
+    });
+  };
+
+  const removeQuestion = (index: number) => {
+    if (editQuestions.length <= 1) return;
+    const question = editQuestions[index];
+    if (question?.id) setDeletedQuestionIds((ids) => [...ids, question.id!]);
+    setEditQuestions((questions) => questions.filter((_, questionIndex) => questionIndex !== index));
   };
 
   return (
@@ -111,6 +230,12 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => router.push("/teacher/results")}
+              className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition"
+            >
+              View Results
+            </button>
             <button
               onClick={() => router.push("/teacher/quiz/create")}
               className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/20 transition"
@@ -193,8 +318,8 @@ export default function TeacherDashboard() {
       {/* Edit Quiz Modal */}
       {editingQuiz && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-4">Edit Quiz Details</h3>
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <h3 className="mb-4 text-lg font-bold text-white">Edit Quiz</h3>
             
             <div className="space-y-4 text-xs">
               <div>
@@ -228,6 +353,73 @@ export default function TeacherDashboard() {
               </div>
             </div>
 
+            {editError && (
+              <p role="alert" className="mt-4 rounded-lg border border-red-800 bg-red-950/60 p-3 text-xs text-red-200">
+                {editError}
+              </p>
+            )}
+
+            <div className="mt-6 space-y-4 border-t border-slate-800 pt-6">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-bold text-white">Questions</h4>
+                  <p className="mt-1 text-xs text-slate-400">Edit each saved question and answer directly.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditQuestions((questions) => [...questions, blankQuestion()])}
+                  className="rounded-md bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
+                >
+                  Add Question
+                </button>
+              </div>
+
+              {loadingQuestions ? (
+                <p className="text-sm text-slate-400">Loading saved questions...</p>
+              ) : editQuestions.map((question, questionIndex) => (
+                <article key={question.id ?? `new-${questionIndex}`} className="space-y-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h5 className="text-sm font-semibold text-white">Question {questionIndex + 1}</h5>
+                    <button
+                      type="button"
+                      disabled={editQuestions.length <= 1}
+                      onClick={() => removeQuestion(questionIndex)}
+                      className="text-xs font-semibold text-red-400 transition hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  <textarea
+                    value={question.question_text}
+                    onChange={(event) => editQuestion(questionIndex, { question_text: event.target.value })}
+                    placeholder="Enter your question"
+                    className="min-h-24 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white outline-none focus:border-indigo-500"
+                  />
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {question.options.map((option, optionIndex) => (
+                      <label key={optionIndex} className="flex items-center gap-3 rounded-lg border border-slate-800 p-3">
+                        <input
+                          type="radio"
+                          name={`correct-${questionIndex}`}
+                          checked={question.correct_option_index === optionIndex}
+                          onChange={() => editQuestion(questionIndex, { correct_option_index: optionIndex })}
+                          aria-label={`Mark option ${optionIndex + 1} as correct`}
+                        />
+                        <input
+                          value={option}
+                          onChange={(event) => editOption(questionIndex, optionIndex, event.target.value)}
+                          placeholder={`Option ${optionIndex + 1}`}
+                          className="w-full border-0 bg-transparent text-sm text-white outline-none"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+
             <div className="flex justify-end space-x-2 mt-6">
               <button
                 onClick={() => setEditingQuiz(null)}
@@ -237,9 +429,10 @@ export default function TeacherDashboard() {
               </button>
               <button
                 onClick={handleSaveEdit}
+                disabled={savingEdit || loadingQuestions}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition"
               >
-                Save Changes
+                {savingEdit ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

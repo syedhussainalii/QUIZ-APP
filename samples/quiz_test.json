@@ -1,114 +1,77 @@
 {
-  "title": "Computer Architecture & Digital Logic",
-  "category": "Computer Science",
-  "duration_minutes": 25,
-  "difficulty": "Medium",
-  "due_date": "2026-09-10T23:59:00Z",
+  "title": "Computer Science Foundations & Web Fundamentals",
+  "description": "A 14-question comprehensive test covering core programming concepts, data structures, web protocols, and networking.",
+  "duration_minutes": 20,
   "questions": [
     {
-      "question_text": "How many bits are in a single byte?",
-      "options": ["4 bits", "8 bits", "16 bits", "32 bits"],
+      "question_text": "Which data structure operates on a Last-In, First-Out (LIFO) principle?",
+      "options": ["Queue", "Stack", "Binary Tree", "Linked List"],
       "correct_option_index": 1
     },
     {
-      "question_text": "Which CPU component is responsible for executing basic arithmetic and logic operations?",
-      "options": ["Control Unit (CU)", "Arithmetic Logic Unit (ALU)", "Memory Management Unit (MMU)", "Register File"],
-      "correct_option_index": 1
-    },
-    {
-      "question_text": "Which memory type provides the fastest access speeds to the processor?",
-      "options": ["L1 Cache / CPU Registers", "Random Access Memory (RAM)", "Solid State Drive (SSD)", "Read-Only Memory (ROM)"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "What does a 2-input AND gate output when the inputs are 1 and 0?",
-      "options": ["1", "0", "High Z", "Undefined"],
-      "correct_option_index": 1
-    },
-    {
-      "question_text": "Which architecture pattern uses the same bus and memory space for both instructions and data?",
-      "options": ["Harvard Architecture", "Von Neumann Architecture", "RISC-V Architecture", "NUMA Architecture"],
-      "correct_option_index": 1
-    },
-    {
-      "question_text": "In digital logic, what output does a 2-input OR gate give for inputs 0 and 0?",
-      "options": ["0", "1", "High Z", "Undefined"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "What is the decimal equivalent of the binary number 1011?",
-      "options": ["9", "10", "11", "13"],
+      "question_text": "What is the worst-case time complexity of the QuickSort algorithm?",
+      "options": ["O(n log n)", "O(n)", "O(n²)", "O(1)"],
       "correct_option_index": 2
     },
     {
-      "question_text": "Which register holds the address of the next instruction to be fetched?",
-      "options": ["Program Counter (PC)", "Instruction Register (IR)", "Memory Address Register (MAR)", "Accumulator"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "What is the primary purpose of pipelining in CPU design?",
-      "options": ["To increase instruction throughput by overlapping execution stages", "To increase the clock speed of the CPU", "To reduce the number of registers needed", "To eliminate the need for cache memory"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "Which of these best describes a flip-flop in digital logic?",
-      "options": ["A combinational circuit with no memory", "A bistable device that stores one bit of data", "A gate that only performs addition", "A type of cache memory"],
+      "question_text": "Which layer of the OSI model is responsible for routing packets across networks?",
+      "options": ["Data Link Layer", "Network Layer", "Transport Layer", "Session Layer"],
       "correct_option_index": 1
     },
     {
-      "question_text": "What does a multiplexer (MUX) do in a digital circuit?",
-      "options": ["Selects one of several input signals and forwards it to a single output", "Splits one input into multiple outputs", "Stores multiple bits permanently", "Converts analog signals to digital"],
-      "correct_option_index": 0
+      "question_text": "What default port number does the secure HTTPS protocol use?",
+      "options": ["80", "21", "22", "443"],
+      "correct_option_index": 3
     },
     {
-      "question_text": "Which bus carries the actual data being transferred between the CPU and memory?",
-      "options": ["Address Bus", "Data Bus", "Control Bus", "System Clock"],
+      "question_text": "In SQL, which clause is used to filter records aggregated by a GROUP BY clause?",
+      "options": ["WHERE", "HAVING", "ORDER BY", "SELECT"],
       "correct_option_index": 1
     },
     {
-      "question_text": "What does RISC stand for in CPU architecture?",
-      "options": ["Reduced Instruction Set Computer", "Rapid Integrated System Circuit", "Random Instruction Set Cache", "Reconfigurable Internal System Component"],
-      "correct_option_index": 0
+      "question_text": "Which HTTP method is idempotent and used to update existing resources or create them if non-existent?",
+      "options": ["POST", "PUT", "GET", "DELETE"],
+      "correct_option_index": 1
     },
     {
-      "question_text": "In a Karnaugh map (K-map), what is the primary goal?",
-      "options": ["To simplify Boolean expressions by grouping adjacent 1s", "To convert binary to hexadecimal", "To design memory chips", "To calculate clock frequency"],
-      "correct_option_index": 0
+      "question_text": "In Object-Oriented Programming, what concept allows a subclass to provide a specific implementation of a method already defined in its superclass?",
+      "options": ["Method Overloading", "Method Overriding", "Encapsulation", "Abstraction"],
+      "correct_option_index": 1
     },
     {
-      "question_text": "Which addressing mode uses the operand's value directly within the instruction itself?",
-      "options": ["Immediate Addressing", "Indirect Addressing", "Register Addressing", "Indexed Addressing"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "What is the main advantage of Harvard architecture over Von Neumann architecture?",
-      "options": ["Separate instruction and data pathways allow simultaneous access, improving speed", "It uses less total memory", "It requires fewer transistors", "It eliminates the need for a control unit"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "What is cache coherence primarily concerned with?",
-      "options": ["Ensuring consistent data across multiple caches in a multiprocessor system", "Increasing cache physical size", "Reducing power consumption of RAM", "Compressing data in cache"],
-      "correct_option_index": 0
-    },
-    {
-      "question_text": "Which logic gate outputs 1 only when its inputs are different (one 0 and one 1)?",
-      "options": ["AND", "OR", "XOR", "NAND"],
+      "question_text": "What type of join in SQL returns all rows from the left table and matched rows from the right table?",
+      "options": ["INNER JOIN", "FULL JOIN", "LEFT JOIN", "RIGHT JOIN"],
       "correct_option_index": 2
     },
     {
-      "question_text": "What is the purpose of the Control Unit (CU) in a CPU?",
-      "options": ["It directs and coordinates the operations of the processor by generating control signals", "It performs all mathematical calculations", "It stores the operating system", "It manages network connections"],
+      "question_text": "Which component in a CPU performs arithmetic and logical computations?",
+      "options": ["Control Unit (CU)", "Arithmetic Logic Unit (ALU)", "Registers", "Cache Memory"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "What does CSS stand for in web development?",
+      "options": ["Creative Style Sheets", "Cascading Style Sheets", "Computer Style System", "Centralized Sheet Structure"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "Which algorithm is used to find the shortest path in a weighted graph with non-negative edge weights?",
+      "options": ["Dijkstra's Algorithm", "Kruskal's Algorithm", "Prim's Algorithm", "Bellman-Ford Algorithm"],
       "correct_option_index": 0
     },
     {
-      "question_text": "In memory hierarchy, why is there a trade-off between speed and capacity?",
-      "options": ["Faster memory technologies (like SRAM) are more expensive per bit, limiting their size", "Slower memory always has more errors", "Faster memory requires more power to store data long-term", "There is no real trade-off; it's a manufacturing choice only"],
-      "correct_option_index": 0
+      "question_text": "In JavaScript, which keyword is used to declare a variable scoped to its enclosing block that cannot be reassigned?",
+      "options": ["var", "let", "const", "static"],
+      "correct_option_index": 2
     },
     {
-      "question_text": "What does a NAND gate output when both inputs are 1?",
-      "options": ["0", "1", "High Z", "Undefined"],
-      "correct_option_index": 0
+      "question_text": "What protocol translates domain names (e.g., kiet.edu.pk) into IP addresses?",
+      "options": ["DHCP", "DNS", "FTP", "ARP"],
+      "correct_option_index": 1
+    },
+    {
+      "question_text": "Which Git command creates a local copy of a remote repository?",
+      "options": ["git init", "git fetch", "git clone", "git pull"],
+      "correct_option_index": 2
     }
   ]
 }
